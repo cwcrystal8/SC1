@@ -18,7 +18,9 @@ int main(){
   s2[0] = 'h';
   s2[1] = 'i';
   s2[2] = 0;
+  s2[3] = 'z';
   printf("s2: %s\n", s2);
+  
   return 0;
 }
 
@@ -44,4 +46,12 @@ YOU CANNOT MODIFY LITERAL STRINGS.
 
 DECLARING STRINGS
 char s[256]; --> normal array declaration, allocates 256 bytes
+
+char s[256] = "Imagine";
+   Allocates 256 bytes. 
+   Creates the immutable string "Imagine" and then copies it (including the terminating null) into the array. 
+
+char s[] = "Tuesday";
+   Allocates 8 bytes.
+   Creates the immutable string "Tuesday" and then copies it """ ^^^^
 */
