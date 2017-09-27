@@ -64,9 +64,17 @@ Function arguments are new variables that contain a copy of the data passed to t
    double a = 2.3;
    foo(a);
    ...
-   void foo(double x)
+   void foo(double x){
+      x = 59;
+   }
    ...
 when calling foo, a new variable will be created (ie. x for a), so when modifying the variable the original will not be changed 
+
+if you want to actually modify a in the function:
+   void foo(double *x){
+      *x = 59;
+   }
+
 when passing an array, you pass only the pointer
 */
 
