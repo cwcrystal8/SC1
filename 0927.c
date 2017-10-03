@@ -50,8 +50,14 @@ char s[256]; --> normal array declaration, allocates 256 bytes
 char s[256] = "Imagine";
    Allocates 256 bytes. 
    Creates the immutable string "Imagine" and then copies it (including the terminating null) into the array. 
+   ['I'] ['m'] ['a'] ['g'] ['i'] ['n'] ['e'] [ 0 ] [etc... until 256] 
 
 char s[] = "Tuesday";
    Allocates 8 bytes.
-   Creates the immutable string "Tuesday" and then copies it """ ^^^^
+   Creates the immutable string "Tuesday" and then copies it (including terminating null) into the array. 
+   ['T'] ['u'] ['e'] ['s'] ['d'] ['a'] ['y'] [ 0 ]
+
+char *s3 = "Mankind";
+   Creates the immutable string "Mankind", and returns a pointer to that string.
+   Since the pointer is to an immutable piece of memory, you cannot modify strings created in this way.
 */

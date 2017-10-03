@@ -1,0 +1,44 @@
+10.3.17
+MAKE IT SO
+
+SEPARATE COMPILATION
+You can combine multiple c files into a c program by including them all in one gcc command.
+    i.e. gcc test.c string.c foo.c woohoo.c
+This creates a single executeable.
+
+You cannot have duplicate function or global variable names acrosss these files. This will result in an error (not a warning). 
+    i.e. multiple main functions
+
+There must be a main function in order to create an executeable program.
+
+Including .h files: #include "<filename>"
+
+gcc -c
+This compiles a c file into a .o file; it is not a fully functional program, but it is compiled code. Do this to compile a .c file that does not contain a main() function (to check for syntax errors).
+.o files can be linked together with .c files through gcc
+    i.e. gcc string.o main.o
+    
+Make - creates compiling instructions and set up dependencies
+     Standard name for the file is makefile
+syntax:
+     <TARGET>: <DEPENDENCIES>
+     TAB<RULES>
+For example:
+    strtest: dwstring.o main.o
+    	gcc -o strtest dwstring.o main.o
+    dwstring.o: dwstring.c dwstring.h
+    	gcc -c dwstring.c
+    main.o: main.c dwstring.h
+    	gcc -c main.c
+To run the makefile: make
+
+Every time you run make, only the target is checked, and any of its subsequent dependencies. 
+touch - makes it seem like the file has been modified
+
+More common things in make files
+clean:
+    rm *.o
+    rm *~
+run: all
+    ./strtest
+"make run" will compile all, and then run the program
