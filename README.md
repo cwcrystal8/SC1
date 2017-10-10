@@ -6,4 +6,4 @@ All the mildly important stuff.
 - **0928**: A string of functions (char arrays vs. pointers).
 - **1003**: Make it so (multiple files for a c program).
 - **1006**: Finding your type (typedef, struct).
-- **1010**: If you don't pay attention you'll get into a heap of trouble!
+- **1010**: If you don't pay attention you'll get into a heap of trouble! (struct cont., stack)
