@@ -7,3 +7,5 @@ All the mildly important stuff.
 - **1003**: Make it so (multiple files for a c program).
 - **1006**: Finding your type (typedef, struct).
 - **1010**: If you don't pay attention you'll get into a heap of trouble! (struct cont., stack)
+- **1012**: malloc & free: The Dynamic Duo! (malloc, free, calloc, realloc)
+- **1018**: Back to the grind
