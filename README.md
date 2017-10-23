@@ -10,3 +10,4 @@ All the mildly important stuff.
 - **1012**: malloc & free: The Dynamic Duo! (malloc, free, calloc, realloc)
 - **1018**: Back to the grind (valgrind)
 - **1019**: Get Dem Bugs (GDB)
+- **1023**: A bit of wisdom (base formatting characters, bitwise operators)
