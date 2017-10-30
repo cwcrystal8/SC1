@@ -14,4 +14,4 @@ All the mildly important stuff.
 - **1024**: File this under useful information (file permissions)
 - **1025**: Opening up a world of possibilities
 - **1026**: Read your writes! (umask, read, write)
-- **1030**: Seek and ye shall find
+- **1030**: Seek and ye shall find (lseek)
