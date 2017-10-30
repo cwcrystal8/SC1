@@ -11,3 +11,7 @@ All the mildly important stuff.
 - **1018**: Back to the grind (valgrind)
 - **1019**: Get Dem Bugs (GDB)
 - **1023**: A bit of wisdom (base formatting characters, bitwise operators)
+- **1024**: File this under useful information (file permissions)
+- **1025**: Opening up a world of possibilities
+- **1026**: Read your writes! (umask, read, write)
+- **1030**: Seek and ye shall find
