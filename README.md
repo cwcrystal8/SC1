@@ -15,4 +15,5 @@ All the mildly important stuff.
 - **1025**: Opening up a world of possibilities
 - **1026**: Read your writes! (umask, read, write)
 - **1030**: Seek and ye shall find (lseek, stat)
-- **1103**: Input? fgets about it! (command line args)
+- **1103**: Input? fgets about it! (command line args, scanf)
+- **1106**: Are your processes running? Then you should go catch them! (fgets, sscanf, processes)
