@@ -17,4 +17,6 @@ All the mildly important stuff.
 - **1030**: Seek and ye shall find (lseek, stat)
 - **1103**: Input? fgets about it! (command line args, scanf)
 - **1106**: Are your processes running? Then you should go catch them! (fgets, sscanf, processes)
-- **1108**: Sending mixed signals
+- **1108**: Sending mixed signals (signals)
+- **1109**: Time to make an executive decision (execlp, execvp)
+- **1113**: What the fork? (fork)
