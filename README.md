@@ -20,3 +20,7 @@ All the mildly important stuff.
 - **1108**: Sending mixed signals (signals)
 - **1109**: Time to make an executive decision (execlp, execvp)
 - **1113**: What the fork? (fork)
+- **1114**: Wait for it (wait)
+- **1115**: Playing favorites (endian-ness, WEXITSTATUS, waitpid)
+- **1117**: Ceci n'est pas une pipe (pipe)
+- **1121**: A pipe by any other name... (named pipes, mkfifo)
