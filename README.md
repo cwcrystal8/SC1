@@ -24,3 +24,7 @@ All the mildly important stuff.
 - **1115**: Playing favorites (endian-ness, WEXITSTATUS, waitpid)
 - **1117**: Ceci n'est pas une pipe (pipe)
 - **1121**: A pipe by any other name... (named pipes, mkfifo)
+- **1127**: Redirection; how does it... SQUIRREL (redirection)
+- **1128**: C, the ultimate hipster, using # decades before it was cool. (#, macros, conditional statement)
+- **1201**: Sharing is caring! (shared memory)
+- **1204**: Memes
