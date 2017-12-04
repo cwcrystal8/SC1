@@ -1,3 +1,215 @@
+
+---
+# 10.26.17 - Read your writes!
+
+### umask - `<sys/stat.h>`
+- Set the file creation permission mask
+- By default, created files are not given the exact permissions provided in the mode argument to open. Some permissions are automatically shut off.
+Umask is applied in the following way:
+`new_permissions = ~mask & mode`
+The default mask is 0002.
+
+mode   = 666 -> 110 110 110  
+umask  = 022 -> 000 010 010  
+
+~umask =     -> 111 101 101  
+& mode =     -> 110 110 110  
+- - - - - - - - - - - - - -  
+       = 644 -> 110 100 100
+
+**`umask(<MASK>)`**
+- You can define the umask using a 3 digit octal.
+- `umask(0000);` allows everything
+
+### read - `<unistd.h>`
+- read in data from a file
+- `read(<FILE DESCRIPTOR>, <BUFFER>, <AMOUNT>)`; read AMOUNT bytes from file
+- `read(fd, buff, n)`
+- Read n bytes from the fd's file and put that data into buff
+- Returns the number of bytes actually read. Returns -1 and sets errno if unsuccessful.
+- BUFFER must be a pointer
+
+### write - `<unistd.h>`
+- write data to a file
+- `write(<FILE DESCRIPTOR>, <BUFFER>, <AMOUNT>)`
+- `write(fd, buff, n)`
+- Write n byes from buff into fd's file
+
+---
+# 10.25.17 - Opening up a world of possibilities
+
+### open - `<fcntl.h>`
+- Add a file to the file table and returns it file descriptor.
+- If open fails, -1 is returned, extra error information can be found in errno, an int variable that can be found in `<errno.h>`. Using strerror (in string.h) on errno will treturn a string description of the error.
+**`open(<PATH>, <FLAGS>, <MODE>)`**
+#### mode
+- Only used when creating a file. Set the new file's permissions using a 3 digit octal number.
+
+#### flags
+- Determine what you plan to do with the file.
+Use the following constants:
+- O_RDONLY, O_WRONLY, O_ROWR, O_APPEND, O_TRUNC
+- O_CREAT: must be used if the file does not exist
+- O_EXCL: when combined with O_CREAT, will return an error if the file exists
+
+Each flag is a number; to combine flags we use bitwise OR
+- O_WRONLY = 1           00000001
+- O_APPEND = 8           00001000
+- O_WRONLY | O_APPEND =  00001001
+
+---
+# 10.24.17 - File this under useful information
+
+### file permissions
+- 3 types: read, write, execute
+Permissions can be represented as 3-digit binary or 1-digit octal numbers.
+- 100 <==> 4 => read only
+- 111 <==> 7 => read, write, execute
+
+There are 3 permission "areas":
+- user, group, others (everyone else)
+- each area can have its own permissions
+- 0644 => user: read + write, group: read:, other: read
+
+Command: `ls -l` to show file permissions (plus some extra stuff)
+- `user-group-other` --> i.e. `-rwxr-xr-x`
+To change file permissions: `chmod`
+- i.e. `chmod -x <filename>`, `chmod 644 <filename>` (rw-r-r), `chmod 600 <filename>` (-rw-------)
+- 644 is probably the standard permissions given by the system
+
+### File table
+- A list of all the files being used by a program while it is running.
+- Contains basic information like the file's location and size.
+- The file table has a limited size, which is a power of 2 (commonly 256). `getdtablesize()` will return this value. This is a hard limit (256 files opened at the same time is a little much).
+- Each file is given an integer index, starting at 0. This is referred to as the file descriptor.
+
+There are 3 files always open in the table:
+- 0 or STDIN_FILENO: stdin
+- 1 or STDOUT_FILENO: stdout
+- 2 or STDERR_FILENO: stderr
+
+---
+# 10.23.17 - A bit of wisdom
+
+### base formatting characters
+- **%o**: octal integer
+- **%x**: hexadecimal integer
+
+You can define native integers in bases 2, 8 and 16 by using the following prefixes.
+- **0b**: binary
+- **0**: octal
+- **0x**: hexadecimal
+```c
+int b = 0b1011; // prints 11
+int o = 0122;   // prints 82
+int x = 0xa3;   // prints 163
+```
+THIS DOES NOT CHANGE THE VALUE  
+`0b1011 == 013 == 0xB == 11`
+
+## Bitwise Operators
+Evaluated on each individual bit of a value.
+
+### >> right shift
+- i.e. `x >> 1`
+- move all bits to the right, add 0s in the front
+```c
+unsigned char cb = 0b11001010; // prints 202
+cb = cb >> 1;                  // prints 101
+cb = cb >> 1;                  // prints 50
+cb = cb << 1;                  // prints 100
+```
+
+### << left shift
+- i.e. `x << 2`
+- move all bits to the left, add 0s in the back
+
+Left shift and right shift will not overflow end bits into adjacent memory.
+
+### other bitwise operators
+
+**~negation**
+- flip every bit
+- i.e. ~x
+
+**| or**
+- perform or for each pair of bits in (a,b)
+- i.e. a | b
+
+**& and**
+- perform and for each pair of bits in (a, b)
+- i.e. a & b
+- 10110111 & 01011100 = 00010100
+
+**^ xor**
+- perform xor for each pair of bits in (a, b)
+- i.e. a ^ b
+- one or the other must be true; not both
+- 10110111 ^ 01011100 = 11101011
+
+xor swap:
+1. a = a ^ b;
+2. b = a ^ b;
+3. a = a ^ b;
+
+---
+# 10.19.17 - Get Dem Bugs
+
+Valgrind - memory issues
+
+## GDB - GNU Debugger
+- more general, like an all-purpose debugger
+- an interactive shell to run your program through
+```
+gcc -c broken.c
+gdb ./a.out
+
+(gdb) run
+
+// this shows the line in which the error occured, plus some buffer space
+(gdb) list
+
+// you can set break points
+(gdb) break <line number>
+(gdb) break <function name>
+
+// print variable values and arrays
+(gdb) print <variable>
+(gdb) print <array>
+
+// continue to next break point
+(gdb) continue
+
+// to end session
+(gdb) quit
+```
+
+### Commands from the gdb shell
+- run: runs the program until it ends / crashes
+- list: show the lines of code run around a crash
+- print <VAR>: print a variable
+- backtrace: show th current stack
+- break <line number>: creates a breakpoint at the given line
+
+Running a program in pieces:
+- continue: run the program until the next breakpoint
+- next: run the next line of the program only
+- step: run the next line of the program; if that is a function call, run the next line of that function
+
+---
+# 10.18.17 - Back to the Grind
+
+### valgrind
+- tool for debugging memory issues in C programs
+- You must compile with -g in order to use valgrind (and similar tools)
+Usage:
+```
+gcc -g foo.c
+valgrind --leak-check=yes ./a.out
+```
+This may create a separate debugging file (depending on your OS), which you should probably avoid adding to github. 
+
+---
 # 10.12.17 - malloc & free: The Dynamic Duo!
 
 ## Dynamic Memory Allocation
