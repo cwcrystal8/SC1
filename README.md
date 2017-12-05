@@ -27,4 +27,5 @@ All the mildly important stuff.
 - **1127**: Redirection; how does it... SQUIRREL (redirection)
 - **1128**: C, the ultimate hipster, using # decades before it was cool. (#, macros, conditional statement)
 - **1201**: Sharing is caring! (shared memory)
-- **1204**: Memes
+- **1204**: Memes (shared memory cont.)
+- **1205**: How do we flag down a resource? (semaphores)
