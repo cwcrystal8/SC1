@@ -1,4 +1,654 @@
+# 12.4.17 - Memes
+**Do Now:** Why is the aim Memes?  
+*They are like memory shared between people.*
 
+Generally, `shmat` after the fork so that pid numbers don't get wonky.
+
+Onto continuing shared memory operations!!
+
+### 4: `shmdt` (shared memory detach)
+Detach a variable from a shared memory segment.  
+Returns 0 upon success or -1 upon failure.
+
+`shmdt (pointer)`
+- **pointer:** the address used to access the segment (will NOT be changed)  
+
+### 5: `shmctl` (shared memory control)
+Perform operations on the shared memory segment.  
+Each shared memory segment has metadata that can be stored in a struct (`struct shmid_ds`).  
+Some of that data stored: last access, size, pid of creator, pid of last modification. 
+
+`shmctl (descriptor, command, buffer)`
+- **descriptor:** return value of `shmget`
+- **commands:** 
+  - `IPC_RMID` removes a shared memory segment
+  - `IPC_STAT` opulate the **buffer** (`struct shmid_ds *`) with segment metadata
+  - `IPC_SET` set some of the segment metadata from **buffer**
+  
+### `ipcs` (ipc stat)
+Terminal command hat lists the current shared memory segments. 
+
+---
+# 12.1.17 - Sharing is caring!
+**Do Now:** Writing a c program with a variable, fork, adjust the value in the child, and print it out in both parent and child.
+```c
+int f;
+double var = 5.83;
+f = fork();
+if(!f){
+    var *= 10;
+    printf("[child]: %d\n", var);
+}
+else{
+    int status;
+    wait(&status);
+    printf("[parent]: %d\n", var);
+}
+```
+Parent | Child
+--- | ---
+5.83 | 58.3
+
+## Shared Memory - `<sys/shm.h>`, `<sys/ipc.h>`, `<sys/types.h>`
+- a segment of heap memory that can be accessed by multiple processes
+- shared memory is accessed via a key that is known by any process that needs to access it
+- does not get released when a program exits (only when rebooting)
+
+### 5 Shared Memory Operations:
+1. Create the segment (happens only *once*)
+2. Access the segment (happens once per process)
+3. Attach the segment to a variable (once per process)
+4. Detach the segment from a variable (once per process)
+5. Remove the segment (only once)
+
+### 1 & 2: `shmget`
+Create or access a shared memory segment.  
+Returns a shared memory descriptor (similar in concept to a file descriptor), or -1 if it fails (errno).
+
+`shmget(key, size, flags)`
+- **key:** unique integer identifier for the shared memory segment (like a file name)
+- **size:** how much memory to request
+- **flags:** includes permissions (same as for files, 3-digit octals) for the segment, combined with bitwise or
+    - `IPC_CREAT` create the segment; if segment is new, will set value to all 0s
+    - `IPC_EXCL` fail if the segment already exists and `IPC_CREAT` is on
+    
+### 3: `shmat`
+Attach a shared memory segment to a variable.  
+Returns a pointer to the segment, or -1 (errno).
+
+`shmat(descriptor, address, flags)`
+- **descriptor:** return value of `shmget`
+- **address:** if 0, the OS will provide the appropriate address
+- **flags:** usually 0, but one useful one
+    - `SHM_RDONLY` makes the memory read only
+
+Modifying the Do Now:
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/shm.h>
+#include <sys/ipc.h>
+#include <sys/types.h>
+
+#define KEY 24601
+
+int main () {
+    int f;
+    int sd = shmget(KEY, sizeof(double), 0600 | IPC_CREAT);
+
+    f = fork();
+    if (!f) {
+        double *p = shmat(sd, 0, 0);
+        *p = 198746.9;
+        printf("[child]: %d\n", *p);
+    }
+    else {
+        int status;
+        
+        double *p;
+        *p = shmat(sd, 0, 0);
+        
+        wait(&status);
+        printf("[parent]: %d\n", *p);
+    }
+}
+```
+
+---
+# 11.28.17 - C, the ultimate hipster, using # decades before it was cool.
+
+### \#
+Used to provide preprocessor instructions.  
+These directives are handled by gcc first.
+
+**`#include <LIBRARY> | "<LIBRARY>"`**
+- link libraries to your code
+- when you use `include`, the compiler finds the file and replaces include with what is inside (i.e. replace the include with all of the headers inside a header file)
+
+**`#define <NAME> <VALUE>`**
+- replace all occurences of NAME with VALUE
+- `#define TRUE 1`
+
+For example, for the pipe assignment you could put the following in a header file and include it in the actual file:
+```c
+#define READ 0
+#define WRITE 1
+```
+
+**macros:**
+- `#define SQUARE(x) x * x`  
+- SQUARE(x) is the NAME, x * x is the VALUE
+...  
+`int y = SQUARE(9);` ==> `int y = 9 * 9;`
+
+- `#define MINE(x,y) x < y ? x : y`
+
+**conditional statement:**
+Useful when using header files and there are multiple functions with the same name.
+```c
+#ifndef <IDENTIFIER> //if not defined
+#define <IDENTIFIER>
+<CODE>
+#endif
+```
+If the identifier has been defined, ignore all the code up until the endif statement. 
+
+For example:
+```c
+#ifndef PARSE_H // parse.h would break
+#define PARSE_H
+int count_tokens ...
+...
+#endif
+```
+
+---
+# 11.27.17 - Redirection; how does it... SQUIRREL
+
+### File Redirection
+- Changing the usual input/output behavior of a program.
+
+### Command line redirection:
+- **`>`** redirects stdout to a file (creates a new file if the file doesn't exist)
+    - overwrites the contents of the file
+    - `<COMMAND> > <FILE>` i.e. `ls > file_list`
+- **`>>`** redirects stdout to a file by appending
+- **`2>`** redirects stderr to a file
+    - overwrites the file (2>> appends)
+- **`&>`** redirect stdout and stderr (&>> appends)
+- **`<`** redirects stdin from a file
+    - the file goes into the command
+- **`|` (pipe)** redirect stdout from one command to stdin of the next
+    - `ls | wc`
+
+`$ ps > ps_file` writes whatever ps gives into a file; a good way to write logs  
+`$ cat` with no file name opens stdin, and prints it to stdout  
+
+`$ cat > new_file` the worlds simplest, and most useless text editor
+- control-d to send the end of file character, and close
+
+`$ cat new_file > newer_file` takes new_file and send it to newer_file
+
+| # | std |  
+| --- | --- |  
+| 0 | stdin |  
+| 1 | stdout |  
+| 2 | stderr |
+
+### Redirection in c programs
+**dup - `<unistd.h>`**  
+- duplicates an existing entry in the file table
+- returns a new file descriptor for the duplicate entry
+- `dup(fd)` returns the new file descriptor
+
+**dup2 - `<unistd.h>`**
+- `dup2(fd1, fd2)` redirects fd2 to fd1
+- duplicates the behavior for fd1 at fd2
+- you will lose any reference to the original fd2; that file wll be closed
+
+`dup2(3, 1)` this gets rid of stdout  
+
+| # | std |  
+| --- | --- |  
+| 0 | stdin |  
+| 1 | foo.txt |  
+| 2 | stderr |  
+| 3 | foo.txt |   
+| 4 | bar.txt |  
+
+```c
+int x = dup(1); // makes 5
+dup2(3, 1) // modifies 1 to foo.txt
+```
+| # | std |  
+| --- | --- |  
+| 0 | stdin |  
+| 1 | foo.txt |  
+| 2 | stderr |  
+| 3 | foo.txt |  
+| 4 | bar.txt |  
+| 5 | stdout |  
+
+`dup2(x, 1)` puts stdout back into 1
+
+---
+# 11.21.17 - A pipe by any other name...
+
+### named pipes 
+- also known as FIFOS (first-in, first-out)
+- same as unnamed pipes except FIFOs have a name that can be used to identify them via different programs
+- Like unnamed pipes, FIFOs are unidirectional
+
+### `mkfifo`
+- shell command to make a FIFO
+- `$ mkfifo <pipe name>`
+
+Pipes show up as 0 bytes (`ls -l`) because they do not take up any disk space (only memory).
+
+You can write into the same pipe from different processes, which may lead to conflicts. the pipe will not close until all connected processes have closed.  
+If you read a pipe from two different processes, weird things happen (you may get alternating messages); this does not return an error and both processes will just continue running, so **don't do it**.  
+If you delete a pipe while it's in use, it will still be in use (it becomes an unnamed pipe)
+
+
+### mkfifo - `<sys/types.h> <sys/stat.h>`
+- `mkfifo(<name>, <permissions>)`
+- c function to create a FIFO
+- reutrns 0 on success and -1 on failure
+- once created, the FIFO acts like a regular file, and we can use open, read, write and close on it
+- FIFOs will block on open (not read) until both ends of the pipe have a connection
+
+### other things - the 2nd marking period project???
+- putting together a shell
+- you can put multiple commands on the same line in bash with a semicolon
+- i.e. `$ echo HELLO ; ls`
+- 2 commands you can't run by exec --> `cd` and `exit`
+
+main  
+|  
+|----> exec  
+|  
+v  
+continues running
+
+---
+# 11.17.17 - Ceci n'est pas une pipe
+
+### pipe  
+- a conduit between 2 separate processes on the same computer
+- pipes have 2 ends; a read from end and a write to end
+- unidirectional (a single pipe must be either read or write only in a process); they only go one way
+- act just like files; open, close, read, write - same functions are used, and they go into the file table as well
+- you can transfer any data you like through a pipe using read/write
+- unnamed pipes have no external identifier (woah!!!) 
+
+### pipe - `<unistd.h>`
+- create an unnamed pipe
+- returns 0 if the pipe was created, -1 if not
+- opens both ends of the pipe as files (will show in the file table)
+
+`pipe(int descriptors[2])`  
+- descriptors: array that will contain the descriptors for each end of the pipe
+
+```c
+int main(){
+    int fds[2];
+    pipe(fds); // creates a pipe
+    
+    int f;
+    f = fork(); // now both parent and child have an array
+    
+    // if child
+    if(!f){
+        close(fds[READ]); // for child to write to the parent 
+        char s[10] = "hello!";
+        sleep(2); // parent will wait for the child to run, even without using wait
+        write(fds[WRITE], s, sizeof(s));
+    }
+    //if parent
+    else{
+        close(fds[WRITE]);
+        char s[10];
+        read(fds[READ], s, sizeof(s)); // read will block until there is something to read in the pipe
+        printf("parent received: [%s]\n", s);
+    }
+    
+    return 0;
+}
+```
+
+---
+# 11.15.17 - Playing Favorites
+```c
+void print_bytes(void *p, int size){
+    int i = 0;
+    unsigned char *cp = (unsigned char *)p;
+    for(; i < size; i++){
+        printf("byte %u: %d\n", i, *cp);
+        cp++;
+    }
+}
+int main(){
+    int x = 302;
+    print_bytes(&x, sizeof(x));
+}
+```
+generally we think of ints as a single place in memory that stores an int, but ints actually have 4 bytes, so if you declare `int x = 32`, that sets x to [ 0 | 0 | 0 | 32 ]
+
+actually, Mr. DW lied, and that is not always the case. 
+- i.e. 302 is [ 46 | 1 | 0 | 0 ]  
+- or at least that's how it works on his computer 
+
+**endian-ness** of a number:
+- big-endian - most significant digits first
+- little-endian - least significant digits first
+
+46 | 1 | 0 | 0
+--- | --- | --- | ---
+00101110 | 00000001 | 00000000 | 00000000
+
+**`WEXITSTATUS(status)`** a macro where things are replaced; hence the CAPs
+- looks at the bytes of status
+- returns the process has returned when it exited
+
+### wait - `<unistd.h>`
+- waits for a specific child  
+`waitpid(pid, status, options)` 
+- **pid:** the pid of the specific child to look for; if -1, will wait for any child
+- **options:** can set other behavior for wait; if 0, will work normally
+
+---
+# 11.14.17 - Wait for it
+```c
+int f -2;
+f = fork();
+if(f){
+    sleep(1);
+}
+fork();
+printf("post-fork I'm %d\tf: %d\tparent: %d\n", getpid(), f, getppid());
+```
+**orphan processes:** If a parent process has ended, `getppid()` returns 1.
+
+While a child process is a normal executeable process with its own memory space, a thread is code that runs on its own but shares its memory with another process (only running as long as the parent is running). 
+
+### wait - `<unistd.h>`
+Stops a parent process from running until any child has provided status information to the parent via a signal.  
+Usually the child has exited.
+
+Returns the pid of the child that exited, or -1 (errno).
+
+`wait(int *status)`
+- the parameter (status) is used to store information about how the process exited 
+
+---
+# 11.13.17 - What the fork?
+Some things about HW: don't be stupid and read the instructions :(  
+
+## **Managing Sub-Processes**
+
+### fork() - `<unistd.h>`  
+Creates a separate process based on the current one.  
+The new process is called a child, the original is the parent.
+
+The child process is a duplicate of the parent process.  
+All parts of the parent process are copied, including stack and heap memory, and the file table.
+
+Returns 0 to the child and the child's pid to the parent or -1 (errno).
+
+```c
+printf("pre-fork\n");
+printf("pid: %d\n", getpid());
+
+fork();
+
+printf("post-fork\n");
+printf("pid: %d\n", getpid());
+```
+This prints post-fork twice, because the child process will copy the parent process at the point of the fork, thus running the same code.
+
+There is no guarantee to the order of the processes after forking.
+
+_**DO NOT USE FORK BOMBS:**_  
+```
+while(1){
+    fork();
+}
+```
+
+---
+# 11.9.17 - Time to make an executive decision
+**Do Now:** `execlp` --> `int execlp(char *file, char *arg, .../*. (char *) NULL */)`
+
+## the exec family - `<unistd.h>`
+There are a number of c functions that can be used to run other programs from within.  
+Replaces the current process with the new program.
+
+### `execlp(char *file, char *arg0, ..., (char *)NULL)`
+- file should be the same as arg[0], so you basically put in the command twice
+- since there can be an arbitrary number of arguments you must end with NULL
+- i.e. `execlp("ls", "ls", "-l", NULL);`
+
+### `execvp`
+- an easier version of execlp so you don't have to individually put in each arg; instead you just pass an array of strings
+```c
+char *args[5];
+args[0] = "ls";
+args[1] = "-a";
+args[2] = NULL;
+
+execvp(args[0], args);
+```
+- **YOU MUST REMEMBER TO PUT A NULL AT THE END OF THE ARGS WITHIN THE ARRAY**
+
+---
+# 11.8.17 - Sending mixed signals
+
+##### Self Explanatory functions
+`getpid()` returns the PID of the current process number  
+`sleep(<TIME>)` does this need to be explained??
+
+### Signals
+Limited way of sending information to a process.
+
+`kill`: command line utility to send a signal to a process
+- `$ kill <PID>` sends signal 15 (SIGTERM) to PID; a misnomer - does not always lead to a program quitting
+- `$ kill -<SIGNAL> <PID>` sends SIGNAL to PID
+
+`killall [-<SIGNAL>] <PROCESS>`
+- sends SIGTERM (or SIGNAL if provided) to all processes with PROCESS as the name
+
+basically; `kill` is for PID, `killall` is for name
+
+### Signal handling in c programs `<signal.h>`
+
+**kill**  
+- `kill(<PID>, <SIGNAL>)` 
+- returns 0 on succes or -1 (errno) on failure
+
+**signalhandler**  
+- to intercept signals in a c program you must create a signal handling function
+- some signals (i.e. SIGKILL) cannot be caught
+- `static void sighandler(int signo)`
+- must be static, must be void, must take a single int parameter
+- static: the function can only be called from within the file it is defined
+
+**signal**
+- after you create the function, you attach the signals to it using the signal function
+- `signal
+
+```c
+static void sighandler(int signo){
+  if(signo == SIGINT){
+    printf("");
+  }
+  if(signo == SIGSTOP){
+    printf("");
+  }
+}
+
+int main(){
+  signal(SIGINT,
+}
+
+---
+# 11.6.17 - Are your processes running? Then you should go out and catch them!
+
+### fgets - `<stdio.h>`
+Read in from a file stream and store it in a string.  
+`fgets(<DESTINATION>, <BYTES>, <FILE POINTER>)`  
+`fgets(s, n, f)` reads at most `n-1` characters from file stream `f` and stores it in `s`  
+
+#### File pointer
+- File * type, more complex than a file descriptor
+- stdin is a FILE * variable; can be used with fgets
+
+Stops at newline, end of file, or the byte limit.  
+If applicable, keeps the newline character as part of the string, appends NULL after.  
+`fgets(s, 256, stdin)` reads a line of text from standard in
+
+```c 
+printf("enter data: ");
+fgets(s, sizeof(s), stdin);
+
+printf("s: %s", s);
+```
+
+### sscanf - `<stdio.h>`  
+Scan a string and extract values based on a format string.  
+`sscanf(<SOURCE STRING>, <FORMAT STRING>, <VAR 1>, <VAR 2>...)`  
+
+## Processes
+Every running program is a process. A process can create subprocesses, but these are no different from regular processes.  
+A processor can handle 1 process per cycle (per core).  
+"Multitasking" appears to happen because the processor switches between all the active processes quickly.  
+
+### pid 
+Every process has a unique identifier call the pid.  
+pid 1 is the init process (if you shut down pid 1, you shut down your computer).  
+Each entry in the /proc directory is a current pid.  
+`ps` shows all the processes running that YOU own and are attached to terminal session.  
+`ps -a` shows everything?  
+`ps -ax` processes that are not attached to a terminal session - actually shows everything
+
+---
+# 11.3.17 - Input? fgets about it!
+
+```c
+char * get_perm_string(mode_t mode){
+     mode_t perms[3];
+     int i;
+     char *perm_string = (char *)malloc(10);
+     perm_string[9] = 0;
+
+     perms[0] = (mode & 0b111000000) >> 6;
+     perms[1] = (mode & 0b111000) >> 3;
+     perms[2] = (mode & 0b111);
+
+     for(i = 0; i < 3; i++){
+     	   if(perms[i] & 0b100) perm_string[0 + i*3] = '';
+     }
+}
+```
+
+### Command Line Arguments
+- `int main(int argc, char *argv[])`
+- program name is considered the first command line argument
+- `argc`: the number of command line arguments
+- `argv`: array of actual arguments
+
+### scanf - `<stdio.h` (not really great, but ok)
+- `scanf(<FORMAT STRING>, <VAR 1>, <VAR 2> ...)`
+- reads in data from stdin using the format string to determine types and puts the dat ain eachv variable
+- variables must be pointers
+```c
+int x;
+float f;
+double d;
+scanf("%d %f %lf, &x, &f, &d);
+```
+
+---
+# 11.1.17 - Where do compsci priests keep their files? In directory!
+
+### Directories
+- A *nix directory is a file containing the names of the files within the directory along with basic information, like file type.
+- Moving files into/out of a directory means changing the directory file, not actually moving any data (with the exception of drives; i.e. a flash drive).
+- All linux box directories are the same size.
+
+### opendir - `<dirent.h>`
+- Open a directory file (so that you can read it later).
+- This will not change the current working diretory (cwd), it only allows your program to read the contents of the directory file.
+- `opendir(<PATH>)`
+- Returns a pointer to a directory **stream** (DIR *).
+- You cannot create or write to a directory with opendir, only read.
+
+### closedir - `<dirent.h>`
+- closes the directory stream and frees the pointer associated with it.
+- `closedir(<DIRECTORY STREAM *>)`
+
+### readdir - `<dirent.h>`
+- `readdir(<DIRECTORY STREAM *>)`
+- returns a pointer to the next entry in a directory stream, or NULL if all entries have already been returned.
+
+#### struct dirent - `<sys/types.h>`
+- directory struct that contains the information stored in a directory file.
+Some of the data members:
+- `d_name`: file name
+- `d_type`: file type as an int
+
+For example:
+```c
+DIR * d;
+d = opendir("somedir");
+
+struct dirent *entry;
+entry = readdir(d);
+
+closedir(d);
+```
+You do not have to worry about malloc and free (this is done with opendir and closedir).
+File names are limited to 256 characters. 
+
+---
+# 10.30.17 - Seek and ye shall find
+
+### lseek - `<unistd.h>`
+- set the current position in an open file
+- `lseek(<FILE DESCRIPTOR>, <OFFSET>, <WHENCE>)`
+
+**OFFSET**: number of bytes to move the position by. Can be negative.
+
+**WHENCE**: where to measure the offset from
+- `SEEK_SET`: offset is evaluated from the beginning of the file
+- `SEEK_CUR`: offset is relative to the current position in the file
+- `SEEK_END`: offset is evaluated from the end of the file
+
+Returns the number of bytes the current position is from the beginning of the file, or -1 (errno).
+
+For the dev-random assignment, instead of closing and reopening to read, use lseek to set place to the beginning of the file again.
+
+### stat - `<sys/stat.h>`
+- get information about a file (metadata)
+- `stat(<PATH>, <STAT BUFFER>)`
+- does not require a file descriptor (you can stat a file without opening it)
+
+```c
+struct stat sb;
+stat("foo", &sb);
+```
+
+**STAT BUFFER**
+- Must be a pointer to a struct stat
+- All the file information gets put into the stat buffer.
+Some of the fields in struct stat:
+- `st_size`: file size in bytes
+- `st_uid, st_gid`: user ID, group ID
+- `st_mode`: file permissions
+- `st_atime, st_mtime`: last access, last modification
+    - these are time_t variables. We can use functions in time.h to make sense of them.
+    - `ctime(<TIME>)` returns time as a string (TIME is type time_t)
+    
 ---
 # 10.26.17 - Read your writes!
 
