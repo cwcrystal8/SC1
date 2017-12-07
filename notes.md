@@ -24,21 +24,22 @@ You can Up/Down a semaphore by any integer value, not just 1.
 `semop (<DESCRIPTOR>, <OPERATION>, <AMOUNT>)`
 - **AMOUNT** amount of semaphores you want to operate on in the semaphore set
 - **OPERATION** a pointer to a `struct sembuf`
-    ```c
-    struct sembuf {
-        short sem_op;
-        short sem_num;
-        short sem_flag;
-    };
-    ```
-    - `sem_num` index of semaphore you want to work on
-    - `sem_op` 
-        - Down(S): any negative number
-        - Up(S): any positive number
-        - 0: block until the semaphore reaches 0
-    - `sem_flag`
-        - SEM_UNDO: allow the OS to undo the given operation; useful in the event that a program exits before it could release a semaphore (basically always include this)
-        - IPC_NOWAIT: instead of waiting for the semaphore to be available, return an error
+
+```c
+struct sembuf {
+    short sem_op;
+    short sem_num;
+    short sem_flag;
+};
+```
+- `sem_num` index of semaphore you want to work on
+- `sem_op` 
+    - Down(S): any negative number
+    - Up(S): any positive number
+    - 0: block until the semaphore reaches 0
+- `sem_flag`
+    - SEM_UNDO: allow the OS to undo the given operation; useful in the event that a program exits before it can release a semaphore (basically always include this)
+    - IPC_NOWAIT: instead of waiting for the semaphore to be available, return an error
 
 ---
 # 12.5.17 - How do we flag down a resource?
@@ -82,14 +83,14 @@ Returns a semaphore descriptor or -1 (errno).
 `semget (<KEY>, <AMOUNT>, <FLAGS>)`
 - **KEY:** unique semaphore identifier (use `ftok`)
 - **AMOUNT:** amount of semaphores (stored as sets of one or more)
-- **FLAGS:** uincludes permissions for the semaphore (like shared memory)
+- **FLAGS:** includes permissions for the semaphore (like shared memory)
   - `IPC_CREAT` create the semaphore and set value to 0
   - `IPC_EXCL` fail if the semaphore already exists and `IPC_CREAT` is on
 
 ---
 # 12.4.17 - Memes
 **Do Now:** Why is the aim Memes?  
-*They are like memory shared between people.*
+*Memes are like memory shared between people.*
 
 Generally, `shmat` after the fork so that pid numbers don't get wonky.
 
@@ -111,7 +112,7 @@ Some of that data stored: last access, size, pid of creator, pid of last modific
 - **descriptor:** return value of `shmget`
 - **commands:** 
   - `IPC_RMID` removes a shared memory segment
-  - `IPC_STAT` opulate the **buffer** (`struct shmid_ds *`) with segment metadata
+  - `IPC_STAT` populate the **buffer** (`struct shmid_ds *`) with segment metadata
   - `IPC_SET` set some of the segment metadata from **buffer**
   
 ### `ipcs` (ipc stat)
@@ -171,7 +172,7 @@ Returns a pointer to the segment, or -1 (errno).
 - **flags:** usually 0, but one useful one
     - `SHM_RDONLY` makes the memory read only
 
-Modifying the Do Now:
+**Modifying the Do Now:**
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -259,17 +260,22 @@ int count_tokens ...
 - Changing the usual input/output behavior of a program.
 
 ### Command line redirection:
-- **`>`** redirects stdout to a file (creates a new file if the file doesn't exist)
-    - overwrites the contents of the file
-    - `<COMMAND> > <FILE>` i.e. `ls > file_list`
-- **`>>`** redirects stdout to a file by appending
-- **`2>`** redirects stderr to a file
-    - overwrites the file (2>> appends)
-- **`&>`** redirect stdout and stderr (&>> appends)
-- **`<`** redirects stdin from a file
-    - the file goes into the command
-- **`|` (pipe)** redirect stdout from one command to stdin of the next
-    - `ls | wc`
+**`>`** redirects stdout to a file (creates a new file if the file doesn't exist)
+- overwrites the contents of the file
+- `<COMMAND> > <FILE>` i.e. `ls > file_list`
+
+**`>>`** redirects stdout to a file by appending
+
+**`2>`** redirects stderr to a file
+- overwrites the file (2>> appends)
+
+**`&>`** redirect stdout and stderr (&>> appends)
+
+**`<`** redirects stdin from a file
+- the file goes into the command
+
+**`|` (pipe)** redirect stdout from one command to stdin of the next
+- `ls | wc`
 
 `$ ps > ps_file` writes whatever ps gives into a file; a good way to write logs  
 `$ cat` with no file name opens stdin, and prints it to stdout  
