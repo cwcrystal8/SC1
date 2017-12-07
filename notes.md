@@ -1,3 +1,92 @@
+# 12.7.17 - What's a semaphore? To control resources!
+
+### `semctl`
+`union semun` must be declared in the main c file on linux machines
+```c
+union semun {
+    int val; // for SETVAL
+    struct semid_ds *buf; // for IPC_STAT and IPC_SET
+    unsigned short *array; // SETALL
+    struct seminfo *__buf;
+};
+```
+#### union?
+A c structure designed to hold only **one** value at a time from a group of potential values. 
+```c
+union semun su;
+su.val = 12;
+```
+
+### `semop`
+Perform an atomic semahore operation.  
+You can Up/Down a semaphore by any integer value, not just 1.
+
+`semop (<DESCRIPTOR>, <OPERATION>, <AMOUNT>)`
+- **AMOUNT** amount of semaphores you want to operate on in the semaphore set
+- **OPERATION** a pointer to a `struct sembuf`
+    ```c
+    struct sembuf {
+        short sem_op;
+        short sem_num;
+        short sem_flag;
+    };
+    ```
+    - `sem_num` index of semaphore you want to work on
+    - `sem_op` 
+        - Down(S): any negative number
+        - Up(S): any positive number
+        - 0: block until the semaphore reaches 0
+    - `sem_flag`
+        - SEM_UNDO: allow the OS to undo the given operation; useful in the event that a program exits before it could release a semaphore (basically always include this)
+        - IPC_NOWAIT: instead of waiting for the semaphore to be available, return an error
+
+---
+# 12.5.17 - How do we flag down a resource?
+**Do Now:** How would you control access to a shared resource like a file, pipe, or shared memory, such that you could ensure no read/write conflicts occurred?  
+
+### semaphores
+(created by Edsger Dijkstra)  
+
+IPC construct used to control access to a shared resource (like a file or shared memory).  
+Most commonly, a semaphore is used as a counter representing how many processes can access a resource at a given time.
+- If a semaphore has a value of 3, then it can have 3 active "users".  
+- If a semaphore has a value of 0, then it is unavailable.
+
+Most semaphore operations are "atomic", meaning they will not be split up into multiple processor instructions.
+
+## semaphore operations
+
+### non-atomic  
+- create a semaphore
+- set an initial value
+- remove a semaphore
+
+### atomic
+`Up(S)` / `V(S)`
+- release the semaphore to signal you are done with its associated resource
+- psuedocode: `s++`
+
+`Down(S)` / `P(S)`
+- attempt to take the semaphore 
+- if the semaphore is 0, wait for it to be available
+- psuedocode: `while(S == 0) {block} S--;`
+
+## semaphores in C
+`<sys/types.h>`, `<sys/ipc.h>`, `<sys/sem.h>`
+
+### `semget`
+Create/get access to a semaphore.  
+This is not the same as `Up(S)` or `Down(S)`; it does not modify the semaphore.  
+Returns a semaphore descriptor or -1 (errno).
+
+`semget (<KEY>, <AMOUNT>, <FLAGS>)`
+- **KEY:** unique semaphore identifier (use `ftok`)
+- **AMOUNT:** amount of semaphores (stored as sets of one or more)
+- **FLAGS:** uincludes permissions for the semaphore (like shared memory)
+  - `IPC_CREAT` create the semaphore and set value to 0
+  - `IPC_EXCL` fail if the semaphore already exists and `IPC_CREAT` is on
+
+---
 # 12.4.17 - Memes
 **Do Now:** Why is the aim Memes?  
 *They are like memory shared between people.*
