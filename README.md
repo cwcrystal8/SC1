@@ -28,4 +28,6 @@ All the mildly important stuff.
 - **1128**: C, the ultimate hipster, using # decades before it was cool. (#, macros, conditional statement)
 - **1201**: Sharing is caring! (shared memory)
 - **1204**: Memes (shared memory cont.)
-- **1205**: How do we flag down a resource? (semaphores)
+- **1205**: How do we flag down a resource? (semaphores, semget)
+- **1207**: What's a semaphore? To control resources! (semctl, semop)
+- **1211**: Creating a handshake agreement (3 way handshake)
