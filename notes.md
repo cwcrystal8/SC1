@@ -1,3 +1,41 @@
+# 12.11.17 - Creating a handshake agreement
+**Do Now:**
+
+Consider a program that uses pipes in order to communicate between 2 separate executeable files.  
+One file is a "server" that is always running. The other is a "client".  
+Design a process by which both files can connect to each other and verify that each can send and receive data. Try to keep it as simple as possible.  
+1. *client sends pre-arranged*
+2. *server checks response*
+3. *serve sends pre-arranged*
+4. *client checks response*
+5. *client sends a message back for server to confirm sending capabilities*
+
+### Handshake
+Procedure to ensure that a connection has been established between 2 programs.  
+Both ends of the connection must verify that they can send and receive data to and from each other.
+
+#### 3 Way Handshake
+1. client sends message to the server
+2. server sends a response to the client
+3. client sends a response back to the server
+
+### Basic Server/Client Design Pattern
+#### 1: Setup
+1. Server creates a "Well Known Pipe" FIFO (named pipe) and waits for a connection.
+2. Client creates a "private" FIFO.
+#### 2: Handshake
+1. Client connects to server and sends the private FIFO name. Client waits for a response from the server.
+2. Server receives client's message and removes the Well Known Pipe.
+3. Server connects to client FIFO , sending an initial acknowledgement message.
+4. Client receives server's message, removes its private FIFO.
+5. Client se ds response to server.
+#### 3: Operation
+Server and client send information back and forth.
+#### 4: Reset
+1. Client exits, server closes any connections to the client.
+2. Server recreates the WKP waits for another client.
+
+---
 # 12.7.17 - What's a semaphore? To control resources!
 
 ### `semctl`
