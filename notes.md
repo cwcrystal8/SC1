@@ -585,6 +585,7 @@ static void sighandler(int signo){
 int main(){
   signal(SIGINT,
 }
+```
 
 ---
 # 11.6.17 - Are your processes running? Then you should go out and catch them!
