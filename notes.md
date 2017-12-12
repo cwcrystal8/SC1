@@ -28,7 +28,7 @@ Both ends of the connection must verify that they can send and receive data to a
 2. Server receives client's message and removes the Well Known Pipe.
 3. Server connects to client FIFO , sending an initial acknowledgement message.
 4. Client receives server's message, removes its private FIFO.
-5. Client se ds response to server.
+5. Client sends response to server.
 #### 3: Operation
 Server and client send information back and forth.
 #### 4: Reset
