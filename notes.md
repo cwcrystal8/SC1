@@ -1,3 +1,6 @@
+# 12.15.17 - Always tip your servers
+
+---
 # 12.11.17 - Creating a handshake agreement
 **Do Now:**
 
