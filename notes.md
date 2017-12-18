@@ -1,4 +1,19 @@
-# 12.15.17 - Always tip your servers
+# 12.18.17 - Always tip your servers
+
+### forking server/client design pattern:
+An easier way to handle multiple clients at once.  
+Downsides are that aside from the subserver and client, no one can talk to each other (server <--> subserver, client <--> client, etc.). Essentially, there is a lack of communication.
+
+### *Handshake*
+1. Client connects to server and sends the private FIFO name. Client wiats for a response from the server.
+2. Server receives client's message and forks off a **subserver**.
+3. Subserver connects to client FIFO, sending an initial acknowledgement message.
+4. Client receives subserver's message, removes its private FIFO. 
+
+### *Operation*
+1. Server removes WKP and closes any connections to client.
+2. Server recreates WKP and waits for a new connection.
+3. **Subserver** and **client** send information back and forth.
 
 ---
 # 12.11.17 - Creating a handshake agreement
