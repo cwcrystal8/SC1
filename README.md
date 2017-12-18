@@ -31,3 +31,4 @@ All the mildly important stuff.
 - **1205**: How do we flag down a resource? (semaphores, semget)
 - **1207**: What's a semaphore? To control resources! (semctl, semop)
 - **1211**: Creating a handshake agreement (3 way handshake)
+- **1218**: Always tip your servers (forking server/client design)
