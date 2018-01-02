@@ -1,3 +1,33 @@
+# 1.2.18 - Socket to Me
+
+### Socket
+A connection between 2 programs over a *network*.  
+A socket corresponds to an IP (internet protocol) Address / Port pair.
+
+#### To use a socket
+1. create the socket (kind of like creating the WKP)
+2. bind it to an address and port
+3. listen (creator) / initiate a connection (client)
+4. send / receive data
+
+### IP Addresses
+*All* devices connected to the internet have an IP address.  
+IP addresses come in 2 flavors, IPv4 (the main standard) and IPv6 (what should be the main standard).  
+Addresses are allocated in blocks to make routing easier.
+
+**IPv4:** 2 byte addresses of the form `[0-255].[0-255].[0-255].[0-255]`  
+Each group is called an *octet*.  
+At most there are 2^32, or ~4.3 billion IPv4 addresses.
+
+**IPv6:** 16 byte addresses of the form: `[0-ffff]:[0-ffff]:[0-ffff]:[0-ffff]:[0-ffff]:[0-ffff]:[0-ffff]:[0-ffff]`  
+Each group is known as a *hextet* (although not as standard as octet).  
+Leading 0s are ignored.  
+
+Any number of consecutive all 0 hextets can be replaced with ::  
+`0000 : 0000 : 0000 : 0000 : 004f : 13c2 : 0009 : a2d2`  
+`:: 4f : 13c2 : 9 : a2d2`
+
+---
 # 12.18.17 - Always tip your servers
 
 ### forking server/client design pattern:
