@@ -32,3 +32,6 @@ All the mildly important stuff.
 - **1207**: What's a semaphore? To control resources! (semctl, semop)
 - **1211**: Creating a handshake agreement (3 way handshake)
 - **1218**: Always tip your servers (forking server/client design)
+- **0102**: Socket to Me (socket, IP addresses)
+- **0103**: Socket to Me (ports, socket types)
+- **0105**: Stop. Collaborate, and listen (socket functions, struct addrinfo)
