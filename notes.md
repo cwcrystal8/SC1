@@ -1,3 +1,107 @@
+# 1.5.18 - Stop. Collaborate, and listen
+
+### socket - `<sys/socket.h>`
+- creates a socket
+- returns a socket descriptor (int that works like a file descriptor)
+- at this point, it is an unnamed socket (not bound to a port)
+
+#### `socket(domain, type, protocol)`
+- **domain:** type of address (`AF_INET` or `AF_INET6`)
+- **type:** `SOCK_STREAM` or `SOCK_DGRAM`
+- **protocol:**  
+    combination of domain and type settings  
+    if set to 0 the OS will set to correct protocol (TCP or UCP)
+- **i.e.** `int ds = socket(AF_INET, SOCK_STREAM, 0);`
+
+#### `struct addrinfo`
+System library calls use a `struct addrinfo` to represent network addresses (containing information like IP address, port, protocol, ...).
+
+**.ai_family**
+- AF_INET: IPv4
+- AF_INET6: IPv6
+- AF_UNSPEC: either one
+
+**ai_socktype**
+- SOCK_STREAM
+- SOCK_DGRAM
+
+**ai_flag**
+- AI_PASSIVE: automatically set to any incoming IP address
+
+**ai_addr**
+- pointer to a `struct sockaddr` containing the IP address
+
+**ai_addrlen**
+- size of the address in bytes
+
+
+### getaddrinfo - `<sys/types.h>`, `<sys.socket.h>`, `<netdb.h>`
+Lookup information about the desired network address and get one or more matching `struct addrinfo` entries.
+
+#### `getaddrinfo(node, service, hints, results);`
+- **node:**  
+    string containing an IP address or hostname to lookup  
+    if `NULL`, use the local machine's IP address  
+- **service:**  
+    string with a port number or service name (if the service is in `/etc/services`)
+- **hints:**  
+    pointer to a `struct addrinfo` used to provide settings for the lookup (type of address, etc.)
+- **results:**  
+    pointer to a different `struct addrinfo` that will be a linked list containign entries for each matching address  
+    `getaddrinfo` will allocate memory for these structs
+
+#### using `getaddrinfo`
+```c
+struct addrinfo * hints, * results;
+hints = (struct addrinfo *)calloc(1, sizeof(struct addrinfo));
+
+hints->ai_family = AF_INET;
+hints->ai_socktype = SOCK_STREAM; // TCP socket
+hints->ai_flags = AI_PASSIVE; // only needed on server
+
+getaddrinfo(NULL, "80", hints, &results); // server sets node to NULL
+
+// client
+getaddrinfo("149.89.150.100", "9845", hints, &results);
+
+// do stuff...
+
+free(hints);
+freeaddrinfo(results);
+```
+
+### bind (server only) = `<sys/socket.h>`
+- binds the socket to an address and port
+- returns 0 (success) or -1 (failure)
+
+#### `bind(socket descriptor, address, address length)`
+- **socket descriptor:** return value of `socket`
+- **address:** pointer to a `struct sockaddr` representing the address
+- **address length:** size of the address, in bytes
+- **address** and **address length** can be retrived from `getaddrinfo`
+
+#### Using `bind`
+```c
+// create socket
+int sd; // etc...
+
+struct addrinfo *hints, *results;
+// use getaddrinfo
+
+bind(sd, results->ai_addr, results->ai_addrlen);
+```
+
+### listen (server only) - `<sys/socket.h>`
+- set a socket to *passively* await a connection
+- needed for stream sockets
+- does not block
+#### listen(socket descriptor, backlog)
+- **doscket descriptor:** return value of `socket`
+- **backlog:**  
+    number of connections that can be queued up  
+    depending on the protocol, this may not do much
+
+---
 # 1.3.18 - Socket to Me (cont.)
 ### Network Ports
 Allow a single computer to run multiple services.
@@ -38,8 +142,8 @@ A socket corresponds to an IP (internet protocol) Address / Port pair.
 
 #### To use a socket
 1. create the socket (kind of like creating the WKP)
-2. bind it to an address and port
-3. listen (creator) / initiate a connection (client)
+2. bind it to an address and port (server)
+3. listen and accept (server) / connect (client)
 4. send / receive data
 
 ### IP Addresses
