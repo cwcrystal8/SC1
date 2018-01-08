@@ -1,4 +1,4 @@
-# 1.5.18 - Stop. Collaborate, and listen
+# 1.5.18, 1.8.18 - Stop. Collaborate, and listen
 
 ### socket - `<sys/socket.h>`
 - creates a socket
@@ -69,8 +69,8 @@ getaddrinfo("149.89.150.100", "9845", hints, &results);
 free(hints);
 freeaddrinfo(results);
 ```
-
-### bind (server only) = `<sys/socket.h>`
+## Server Only Functions
+### bind - `<sys/socket.h>`
 - binds the socket to an address and port
 - returns 0 (success) or -1 (failure)
 
@@ -91,15 +91,64 @@ struct addrinfo *hints, *results;
 bind(sd, results->ai_addr, results->ai_addrlen);
 ```
 
-### listen (server only) - `<sys/socket.h>`
-- set a socket to *passively* await a connection
-- needed for stream sockets
-- does not block
+### listen - `<sys/socket.h>`
+Set a socket to *passively* await a connection.  
+Needed for stream sockets.  
+Does not block.
 #### listen(socket descriptor, backlog)
-- **doscket descriptor:** return value of `socket`
+- **socket descriptor:** return value of `socket`
 - **backlog:**  
     number of connections that can be queued up  
     depending on the protocol, this may not do much
+
+### accept - `<sys/socket.h>`
+Accept the next client in the queue of a socket in the listen state.  
+Used for stream sockets.  
+Performs the server side of the 3 way handshake.  
+Creates a new socket for communicating with the client, the listening socket is not modified.  
+Returns a descriptor to the new socket.  
+*Blocks* until a connection is made.
+#### `accept(socket descriptor, address, address length)`
+- **socket descriptor:** descriptor for listening socket
+- **address:** pointer to a `struct sockaddr_storage` that will contain information about the new socket after accept succeeds
+- **address length:** pointer to the variable that will contain the size of the new socket address after accept succeeds
+
+Using listen and accept:
+```c
+//create socket
+//use getaddrinfo and bind
+
+listen(sd, 10);
+
+int client_socket;
+socklen_t sock_size;
+struct sockaddr_storage client_address;
+
+client_socket = accept(sd, (struct sockaddr *)&client_address, &sock_size);
+```
+
+## Client Only Functions
+
+### connect - `<sys/socket.h>`, `<sys/types.h>`
+Connect to a socket currently in the listening state.  
+Used for stream sockets.  
+Performs the client side of the 3 way handshake.  
+Binds the socket to an address and port.  
+Blocks until a connection is made (or fails).
+
+#### `connect(socket descriptor, address, address length)`
+- **address:** pointer to a `struct sockaddr` representing the address
+- **address length:** size of the address, in bytes
+- **address** and **address length** can be retrieved from `getaddrinfo`
+- Notice that the argunments mirror those of `bind()`.
+
+Using Connect:
+```c
+// create socket
+struct addrinfo * hints, * results;
+// getaddrinfo
+connect(sd, results->ai_addr, results->ai_addrlen);
+```
 
 ---
 # 1.3.18 - Socket to Me (cont.)
