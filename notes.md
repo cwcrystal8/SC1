@@ -1,3 +1,49 @@
+# 1.11.18 - Cisco in an hour
+
+### Layer Models of Networking
+Due to the complexity of network communications, the topic is often conceptualized into distinct layers so people can work on specific components rather than everything at once.
+
+The bottom layer is the most concrete, with each subsequent layer becoming more abstract (relying less on the physical connection and more on code).
+
+There are various competing models, including the OSI (Open Systems Interconnections) and TCP/IP models.
+
+### TCP/IP Model Layers
+1. Application (the program itself)
+2. Transport (dealing with things like TCP protocol; transporting data effectively)
+3. Internet (connect 2 computers in different networks, hence the name inter-net)
+4. Link (lowest layer; connect computers to each other)
+
+### Link Layer
+Point-to-point transmission between devices on the same (local) network.  
+Combines physcially connected computers with basic addressing and transmission protocols.
+
+### Physical Connection
+- How to transmit bits between two computers.
+- electrons, photons (fiber-optics), radio waves...
+### A brief history of physical connections
+#### thicknet
+- A single coaxial cable runs along the network (computers all connect to that cable)
+- "vampire taps" cut into the cable and connect to a computer
+#### thinnet
+- A *thinner* coaxial cable runs along the network
+- T-connectors connect computers to the main cable
+- Still must cut the cable and suck out the bits, but slightly more civilized than vampire taps
+
+With **thicknet** and **thinnet**, adding more computers to the network weakened the signal.
+
+#### token ring
+- Each computer is connected in a ring to each other
+- Only one computer has command of network resources at a time (i.e. "having the token")
+- The network sends a "token" throughout the ring, which contains the identity of the computer allowed to use the network. All other computers must wait to use the network.
+- **downsides:** IBM owned the patent, and so everyone had to pay IBM to use it
+
+#### ethernet (what we use today)
+- multiple computers connect to a single hub or switch
+
+**hub:** broadcasts the data to all the computers  
+**switch:** sends dat ato a specific computer
+
+---
 # 1.5.18, 1.8.18 - Stop. Collaborate, and listen
 
 ### socket - `<sys/socket.h>`
