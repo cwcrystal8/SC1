@@ -1,3 +1,48 @@
+# 1.12.18 - Cisco in an hour 2: Electric Boogaloo
+
+### Link Layer
+In order for data to be sent between computers:
+- Each computer needs a uniqe address (MAC Address).
+- The data needs to be sent in a standardized format (Frames).
+
+#### MAC (Media Access Control) Address
+- 6-Byte Hex address: `a:00:1e:b9:70:f6`
+- Only need to be unique on the same local network (not used for Internet traffic).
+
+#### Ethernet Frames
+Each frame has the following format:
+
+prefix | dest | source | type | data | checksum
+--- | --- | --- | --- | --- | ---
+8B | 6B | 6B | 2B | variable | 4B
+- *prefix:* 10101010 x7 + 10101011
+- *dest & source:* MAC addresses
+- *data:* MTU (Maximum Transmission Unit) of 1500B
+- *checksum:* ensures data integrity; designed to verify that the data received is the data sent
+
+### Internet Layer
+Transmission of data between two separate networks.  
+Major features of this layer are addressing and routing.
+- *routers:* physical devices used to connect different local networks  
+Internet layer traffic ignores the specifics of link layer traffic. 
+```
+    switch --- router --- switch
+```
+#### IP Packets
+Data sent over the internet layer is formatted into IP packets.
+IPv4 packet header:
+
+type | size | fragment info | ttl | protocol | header checksum
+--- | --- | --- | --- | --- | ---
+2B | 2B | 4B | 1B | 1B | 2B  
+- *type:* IPv4 / v6, length of the header
+- *size:* total size of the packet
+- *fragment info:* full payloads may be broken into multiple fragments. Each packet will count the number of fragments and its individual fragment number.
+- *ttl (time-to-live):* maximum number of hops a packet can make before reaching its destination
+- *protocol:* TCP / UDP
+- *header checksum:* only for the header, not full packet
+
+---
 # 1.11.18 - Cisco in an hour
 
 ### Layer Models of Networking
@@ -39,9 +84,8 @@ With **thicknet** and **thinnet**, adding more computers to the network weakened
 
 #### ethernet (what we use today)
 - multiple computers connect to a single hub or switch
-
-**hub:** broadcasts the data to all the computers  
-**switch:** sends dat ato a specific computer
+- *hub:* broadcasts the data to all the computers
+- *switch:* sends dat ato a specific computer
 
 ---
 # 1.5.18, 1.8.18 - Stop. Collaborate, and listen
