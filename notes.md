@@ -1,3 +1,48 @@
+# 1.16.18 - Cisco in an hour 3: In 3-D
+*Today's notes are brought to you courtesy of Alex Lu.*
+  
+### IPv4 Packet
+IPv4 Packet Format: 
+
+  header | source | destination | data 
+  --- | --- | --- | --- 
+  12B | 4B | 4B | Variable 
+  
+  - *header:* see above
+  - *source&destination:* IPv4 Addresses
+  - *data:* MTU = 65,536 bytes: data will be fragmented if data is larger than this
+  - *NOTE:* No built-in checksum
+  
+### Routing
+- Routers may break IPv4 packets into fragments
+- When a router receives a packet, it has 2 options:
+- 1. Send the packet to th attached local network
+- 2. Forward the packet to a different router. 
+
+Traceroute is a utility to track where packets are going, and the path they take
+
+`$traceroute homer.stuy.edu`
+1. Packet first goes to 192.168.1.1, the local router 
+2. Packet then goes to 149.89.150.100, homer.stuy.edu 
+
+NOTE: no switches listed, as switches are not on the internet layer.
+
+`$route -n`
+- This command line tool will show what gateway a router will send a given IP to, prints a routing table 
+- The IP 0.0.0.0 means any IP address (not already listed) 
+- The IP 149.89.0.0 means any IP that starts with 149.89, thus any IP on the stuy local network
+- A gateway of 0.0.0.0 means not leaving the local network
+
+Differences Between IPv4 and IPv6
+
+blob | IPv4 | IPv6
+--- | --- | ---
+Address Space | 2^32 | 2^128 
+Packet Format | Header has checksum and fragment info | Headers have no checksum/fragment info
+MTU | MTU of 65,536 | MTU of 2^32, called a jumbogram
+Fragmenting | Fragments | Does not fragment
+
+---
 # 1.12.18 - Cisco in an hour 2: Electric Boogaloo
 
 ### Link Layer
