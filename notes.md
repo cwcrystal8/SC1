@@ -27,6 +27,9 @@ Major features of this layer are addressing and routing.
 Internet layer traffic ignores the specifics of link layer traffic. 
 ```
     switch --- router --- switch
+   ___|___                ___|___
+  |       |              |       |
+ PC       PC            PC       PC
 ```
 #### IP Packets
 Data sent over the internet layer is formatted into IP packets.
