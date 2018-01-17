@@ -1,4 +1,38 @@
-# 1.16.18 - Cisco in an hour 3: In 3-D
+# 1.17.18 - Cisco in an hour:tm: IV: A New Hope
+
+### Transport Layer
+Computer to computer connection over a network.  
+Unconcerned with the individual hops of layer 3 traffic.  
+Network ports are used at the transport layer.  
+TCP and UDP are transport later protocols.  
+
+### Application Layer
+Everything else...
+
+### Data Encapsulation
+```
+Program Data  
+...  
+Network Layer: IP Packets  
+Link Layer: Ethernet Frames
+```
+As data crosses from an upper layer to a lower one, layer-specific metadata is added to help aid transmission.
+- Application :arrow_right: Transport  
+  UDP or TCP headers are added, including network port information
+- Transport :arrow_right: Network  
+  Data (including Transport headers) is packaged into IP Packets
+- Network :arrow_right: Link  
+  Packets (including IP and Transport headers) are packaged into Ethernet Frames
+
+### Data Decapsulation
+When data crossses back up a layer, the packaging for the lower layer is removed.
+
+### Continuations of Cisco in an hour:tm:...
+Cisco in an hour:tm: V for Vendetta  
+Cisco in an hour:tm: VI: The Undiscovered Country
+
+---
+# 1.16.18 - Cisco in an hour:tm: 3: In 3-D
 *Today's notes are brought to you courtesy of Alex Lu.*
   
 ### IPv4 Packet
@@ -16,7 +50,7 @@ IPv4 Packet Format:
 ### Routing
 - Routers may break IPv4 packets into fragments
 - When a router receives a packet, it has 2 options:
-- 1. Send the packet to th attached local network
+- 1. Send the packet to the attached local network
 - 2. Forward the packet to a different router. 
 
 Traceroute is a utility to track where packets are going, and the path they take
@@ -43,7 +77,7 @@ MTU | MTU of 65,536 | MTU of 2^32, called a jumbogram
 Fragmenting | Fragments | Does not fragment
 
 ---
-# 1.12.18 - Cisco in an hour 2: Electric Boogaloo
+# 1.12.18 - Cisco in an hour:tm: 2: Electric Boogaloo
 
 ### Link Layer
 In order for data to be sent between computers:
@@ -91,7 +125,7 @@ type | size | fragment info | ttl | protocol | header checksum
 - *header checksum:* only for the header, not full packet
 
 ---
-# 1.11.18 - Cisco in an hour
+# 1.11.18 - Cisco in an hour:tm:
 
 ### Layer Models of Networking
 Due to the complexity of network communications, the topic is often conceptualized into distinct layers so people can work on specific components rather than everything at once.
