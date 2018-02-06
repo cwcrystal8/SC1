@@ -1,3 +1,33 @@
+# Table of Contents
+DATE | AIM
+:---:| ---
+9/25 | [How to write functioning code.](#92517---how-to-write-functioning-code)
+9/26 | [Let's head to function town.](#92617---lets-head-to-function-town)
+9/27 | [Ctrings](#92717---ctrings) (Strings)
+9/28 | [A string of functions](#92817---a-string-of-functions)
+10/3 | [Make it so](#10317---make-it-so) (makefiles)
+10/6 | [Finding your type](#10617---finding-your-type) (typedef, struct)
+10/10 | [If you don't pay attention you'll get into a heap of trouble!](#101017---if-you-dont-pay-attention-youll-get-into-a-heap-of-trouble) (stack, heap)
+10/12 | [Malloc and Free: The Dynamic Duo](#101217---malloc--free-the-dynamic-duo)
+10/18 | [Back to the Grind](#101817---back-to-the-grind) (valgrind)
+10/19 | [Get Dem Bugs](#101917---get-dem-bugs) (GDB)
+10/23 | [A bit of wisdom](#102317---a-bit-of-wisdom) (base formatting characters, bitwise operators)
+10/24 | [File this under useful information](#102417---file-this-under-useful-information)
+10/25 | [Opening up a world of possibilities](#102517---opening-up-a-world-of-possibilities) (open)
+10/26 | [Read your writes!](#102617---read-your-writes) (umask, read, write)
+10/30 | [Seek and ye shall find](#103017---seek-and-ye-shall-find) (lseek, stat)
+11/1 | [Where do compsci priests keep their files? In directory!](#11117---where-do-compsci-priests-keep-their-files-in-directory) (open/close/read-dir, struct dirent)
+11/3 | [Input? fgets about it!](#11317---input-fgets-about-it) (scanf)
+11/6 | [Are your processes running? Then you should go out and catch them!](#11617---are-your-processes-running-then-you-should-go-out-and-catch-them) (fgets, sscanf, processes)
+11/8 | [Sending mixed signals](#11817---sending-mixed-signals)
+11/9 | [Time to make and executive decision](#11917---time-to-make-an-executive-decision) (exec)
+11/13 | [What the fork?](#111317---what-the-fork)
+11/14 | [Wait for it](#111417---wait-for-it)
+11/15 | [Playing favorites](#111517---playing-favorites) (endian-ness, WEXITSTATUS, wait)
+11/17 | [Ceci n'est pas une pipe](#111717---ceci-nest-pas-une-pipe) (unnamed pipes)
+11/21 | [A pipe by any other name...](#112117---a-pipe-by-any-other-name) (named pipes)
+
+---
 # 1.17.18 - Cisco in an hour:tm: IV: A New Hope
 
 ### Transport Layer
